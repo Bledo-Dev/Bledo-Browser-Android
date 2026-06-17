@@ -54,4 +54,4 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 
 ## Credits
 
-This browser was made by Woopskidds.
+This browser was made by Woopskidds [Youtube](https://youtube.com/@Woopskidd).
