@@ -51,3 +51,7 @@ This application includes integrity checks. If the application detects a comprom
 ## License
 
 This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
+
+## Credits
+
+This browser was made by Woopskidds.
