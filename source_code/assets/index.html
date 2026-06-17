@@ -1,0 +1,231 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="Content-Security-Policy" content="default-src 'self' 'unsafe-inline' 'unsafe-eval' data: blob: https://tile.openstreetmap.org; img-src 'self' data: https://*; font-src 'self' data: https://fonts.gstatic.com;">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Bledo Dashboard</title>
+    <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><circle cx='50' cy='50' r='48' fill='%231B2028'/><circle cx='50' cy='50' r='4.5' fill='%23A5F3FC'/><ellipse cx='50' cy='50' rx='14' ry='38' stroke='%23A5F3FC' stroke-width='2.5' fill='none'/><ellipse cx='50' cy='50' rx='14' ry='38' stroke='%23A5F3FC' stroke-width='2.5' fill='none' transform='rotate(120 50 50)'/><ellipse cx='50' cy='50' rx='14' ry='38' stroke='%23A5F3FC' stroke-width='2.5' fill='none' transform='rotate(240 50 50)'/></svg>">
+    <style>
+        * { box-sizing: border-box; margin: 0; padding: 0; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif; -webkit-tap-highlight-color: transparent; }
+        body { background-color: #0A0C10; color: #e2e8f0; display: flex; flex-direction: column; align-items: center; justify-content: center; min-height: 100vh; padding: 20px; overflow-x: hidden; }
+        .brand-container { text-align: center; margin-bottom: 40px; }
+        .logo { width: 140px; height: 140px; margin-bottom: 24px; filter: drop-shadow(0 0 20px rgba(165, 243, 252, 0.4)); }
+        h1 { font-size: 3.8rem; font-weight: 800; letter-spacing: 2px; margin-bottom: 12px; color: #A5F3FC; text-shadow: 0 0 20px rgba(165, 243, 252, 0.3); }
+        .description { color: #64748b; font-size: 1rem; max-width: 450px; line-height: 1.5; margin-bottom: 10px; font-weight: 500; }
+        .search-wrapper { width: 100%; max-width: 650px; display: flex; align-items: center; background: rgba(27, 32, 40, 0.8); border: 1px solid #334155; border-radius: 18px; padding: 10px; margin-bottom: 48px; transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1); box-shadow: 0 10px 30px rgba(0,0,0,0.3); }
+        .search-wrapper:focus-within { border-color: #A5F3FC; box-shadow: 0 0 25px rgba(165, 243, 252, 0.15); transform: translateY(-2px); }
+        .engine-selector { position: relative; margin-right: 12px; }
+        .engine-trigger { background: #0f172a; color: #cbd5e1; border-radius: 14px; padding: 12px 24px; font-size: 0.95rem; cursor: pointer; display: flex; align-items: center; min-width: 150px; justify-content: space-between; border: 1px solid #1e293b; font-weight: 600; }
+        .engine-trigger::after { content: '▾'; margin-left: 12px; font-size: 0.9rem; color: #A5F3FC; }
+        .engine-menu { position: absolute; top: calc(100% + 12px); left: 0; background: #0f172a; border: 1px solid #334155; border-radius: 16px; display: none; flex-direction: column; z-index: 100; min-width: 180px; box-shadow: 0 15px 35px rgba(0,0,0,0.6); overflow: hidden; }
+        .engine-menu.active { display: flex; }
+        .engine-item { padding: 14px 20px; cursor: pointer; color: #94a3b8; font-size: 0.9rem; transition: all 0.2s; }
+        .engine-item:hover { background: #1e293b; color: #A5F3FC; }
+        .search-form { flex: 1; display: flex; align-items: center; padding-right: 16px; }
+        .search-input { flex: 1; background: transparent; border: none; outline: none; color: white; padding: 14px; font-size: 1.2rem; font-weight: 400; }
+        .search-input::placeholder { color: #475569; }
+        .go-btn { color: #A5F3FC; font-weight: 800; background: transparent; border: none; cursor: pointer; font-size: 1rem; padding: 10px 15px; letter-spacing: 1px; }
+        .shortcuts-grid { display: flex; flex-wrap: wrap; gap: 24px; justify-content: center; width: 100%; max-width: 800px; }
+        .shortcut-item { width: 110px; display: flex; flex-direction: column; align-items: center; cursor: pointer; transition: all 0.2s; position: relative; }
+        .shortcut-item:hover { transform: translateY(-8px); }
+        .shortcut-icon { width: 72px; height: 72px; background: #1B2028; border-radius: 20px; display: flex; align-items: center; justify-content: center; margin-bottom: 12px; font-size: 1.8rem; font-weight: bold; color: #A5F3FC; border: 1px solid #334155; box-shadow: 0 8px 20px rgba(0,0,0,0.2); }
+        .shortcut-name { font-size: 0.85rem; color: #94a3b8; text-align: center; max-width: 100px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; font-weight: 600; }
+        .shortcut-options-trigger { position: absolute; top: -5px; right: 5px; width: 30px; height: 30px; color: #A5F3FC; display: none; align-items: center; justify-content: center; font-size: 22px; font-weight: bold; z-index: 10; border-radius: 50%; background: rgba(0,0,0,0.6); transition: all 0.2s; border: 1px solid #334155; }
+        .shortcut-item:hover .shortcut-options-trigger { display: flex; }
+        .shortcut-options-trigger:hover { background: #334155; transform: scale(1.1); }
+        .options-menu { position: absolute; top: 35px; right: 0; background: #1B2028; border: 1px solid #334155; border-radius: 12px; display: none; flex-direction: column; z-index: 100; min-width: 120px; box-shadow: 0 10px 25px rgba(0,0,0,0.5); overflow: hidden; }
+        .options-menu.active { display: flex; }
+        .options-item { padding: 12px 16px; font-size: 0.85rem; color: #cbd5e1; display: flex; align-items: center; gap: 8px; transition: all 0.2s; cursor: pointer; border: none; background: transparent; text-align: left; width: 100%; }
+        .options-item:hover { background: #334155; color: #A5F3FC; }
+        .options-item.delete { color: #ef4444; }
+        .options-item.delete:hover { background: #ef44441a; }
+        .add-shortcut { width: 72px; height: 72px; background: rgba(30, 41, 59, 0.3); border: 2px dashed #334155; border-radius: 20px; display: flex; align-items: center; justify-content: center; cursor: pointer; transition: all 0.3s; }
+        .add-shortcut:hover { border-color: #A5F3FC; background: rgba(165, 243, 252, 0.05); }
+        .add-shortcut span { font-size: 2rem; color: #475569; }
+        .modal-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.85); backdrop-filter: blur(12px); display: none; align-items: center; justify-content: center; z-index: 1000; }
+        .modal-overlay.active { display: flex; }
+        .modal-content { background: #0A0C10; border: 1px solid #334155; border-radius: 28px; padding: 40px; width: 90%; max-width: 420px; box-shadow: 0 25px 50px rgba(0,0,0,0.5); }
+        .modal-content h3 { color: white; margin-bottom: 24px; font-size: 1.5rem; }
+        .modal-input { width: 100%; background: #1B2028; border: 1px solid #334155; border-radius: 14px; padding: 16px; color: white; margin-bottom: 20px; outline: none; font-size: 1rem; }
+        .modal-input:focus { border-color: #A5F3FC; }
+        .modal-buttons { display: flex; justify-content: flex-end; gap: 16px; }
+        .btn { padding: 14px 28px; border-radius: 14px; border: none; cursor: pointer; font-weight: 700; font-size: 0.95rem; transition: all 0.2s; }
+        .btn-cancel { background: #1e293b; color: #94a3b8; }
+        .btn-add { background: #A5F3FC; color: #0A0C10; }
+        .btn:hover { opacity: 0.9; transform: scale(1.02); }
+    </style>
+</head>
+<body>
+    <div class="brand-container">
+        <svg class="logo" viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <defs>
+                <filter id="glowEffect" x="-20%" y="-20%" width="140%" height="140%">
+                    <feGaussianBlur stdDeviation="2" result="blur" />
+                    <feComposite in="SourceGraphic" in2="blur" operator="over" />
+                </filter>
+            </defs>
+            <circle cx="50" cy="50" r="48" fill="#1B2028" />
+            <g filter="url(#glowEffect)">
+                <circle cx="50" cy="50" r="4.5" fill="#A5F3FC" />
+                <ellipse cx="50" cy="50" rx="14" ry="38" stroke="#A5F3FC" stroke-width="2.5" fill="none" />
+                <ellipse cx="50" cy="50" rx="14" ry="38" stroke="#A5F3FC" stroke-width="2.5" fill="none" transform="rotate(120 50 50)" />
+                <ellipse cx="50" cy="50" rx="14" ry="38" stroke="#A5F3FC" stroke-width="2.5" fill="none" transform="rotate(240 50 50)" />
+                <circle cx="50" cy="88" r="3.5" fill="#A5F3FC" />
+                <circle cx="17.1" cy="31" r="3.5" fill="#A5F3FC" />
+                <circle cx="82.9" cy="31" r="3.5" fill="#A5F3FC" />
+            </g>
+        </svg>
+        <h1>Bledo</h1>
+        <p class="description">Bledo the best security & privacy focused browser.</p>
+    </div>
+    <div class="search-wrapper">
+        <div class="engine-selector">
+            <div class="engine-trigger" id="engineTrigger">DuckDuckGo</div>
+            <div class="engine-menu" id="engineMenu">
+                <div class="engine-item" data-url="https://duckduckgo.com/?q=" data-name="DuckDuckGo">DuckDuckGo</div>
+                <div class="engine-item" data-url="https://www.google.com/search?q=" data-name="Google">Google</div>
+                <div class="engine-item" data-url="https://search.brave.com/search?q=" data-name="Brave Search">Brave Search</div>
+                <div class="engine-item" data-url="https://www.startpage.com/sp/search?query=" data-name="Startpage">Startpage</div>
+            </div>
+        </div>
+        <div class="search-form">
+            <input type="text" id="searchInput" class="search-input" placeholder="Search the Web..." autocomplete="off">
+            <button class="go-btn" id="goBtn">GO</button>
+        </div>
+    </div>
+    <div class="shortcuts-grid" id="shortcutsGrid">
+        <div class="add-shortcut" id="addShortcut"><span>+</span></div>
+    </div>
+    <div class="modal-overlay" id="modalOverlay">
+        <div class="modal-content">
+            <h3 id="modalTitle">New Shortcut</h3>
+            <input type="text" id="nameInput" class="modal-input" placeholder="Name">
+            <input type="text" id="urlInput" class="modal-input" placeholder="Website">
+            <div class="modal-buttons">
+                <button class="btn btn-cancel" id="cancelBtn">CANCEL</button>
+                <button class="btn btn-add" id="saveBtn">SAVE</button>
+            </div>
+        </div>
+    </div>
+    <script>
+        const trigger = document.getElementById('engineTrigger');
+        const menu = document.getElementById('engineMenu');
+        const searchInput = document.getElementById('searchInput');
+        const goBtn = document.getElementById('goBtn');
+        const shortcutsGrid = document.getElementById('shortcutsGrid');
+        const modalOverlay = document.getElementById('modalOverlay');
+        const addBtn = document.getElementById('addShortcut');
+        const nameInput = document.getElementById('nameInput');
+        const urlInput = document.getElementById('urlInput');
+        const saveBtn = document.getElementById('saveBtn');
+        const modalTitle = document.getElementById('modalTitle');
+        let currentEngine = localStorage.getItem('bledo_engine') || "https://duckduckgo.com/?q=";
+        let shortcuts = JSON.parse(localStorage.getItem('bledo_shortcuts')) || [];
+        let editingIndex = -1;
+        function renderShortcuts() {
+            document.querySelectorAll('.shortcut-item').forEach(e => e.remove());
+            shortcuts.forEach((s, index) => {
+                const div = document.createElement('div');
+                div.className = 'shortcut-item';
+                div.innerHTML = `
+                    <div class="shortcut-options-trigger" data-index="${index}">...</div>
+                    <div class="options-menu" id="options-${index}">
+                        <button class="options-item" onclick="openEdit(${index})">✎ Edit</button>
+                        <button class="options-item delete" onclick="deleteShortcut(${index})">🗑 Delete</button>
+                    </div>
+                    <div class="shortcut-icon">${s.name.charAt(0).toUpperCase()}</div>
+                    <div class="shortcut-name">${s.name}</div>
+                `;
+                div.addEventListener('click', (e) => {
+                    if (!e.target.classList.contains('shortcut-options-trigger') && !e.target.closest('.options-menu')) {
+                        if (window.flutter_inappwebview) {
+                            window.flutter_inappwebview.callHandler('onNavigate', s.url);
+                        } else {
+                            window.location.href = s.url;
+                        }
+                    }
+                });
+                const t = div.querySelector('.shortcut-options-trigger');
+                t.addEventListener('click', (e) => {
+                    e.stopPropagation();
+                    closeAllMenus();
+                    const menuElem = div.querySelector('.options-menu');
+                    menuElem.classList.toggle('active');
+                });
+                shortcutsGrid.insertBefore(div, addBtn);
+            });
+        }
+        function closeAllMenus() {
+            document.querySelectorAll('.options-menu').forEach(m => m.classList.remove('active'));
+        }
+        window.deleteShortcut = function(index) {
+            shortcuts.splice(index, 1);
+            localStorage.setItem('bledo_shortcuts', JSON.stringify(shortcuts));
+            renderShortcuts();
+        };
+        window.openEdit = function(index) {
+            editingIndex = index;
+            const s = shortcuts[index];
+            nameInput.value = s.name;
+            urlInput.value = s.url;
+            modalTitle.innerText = "Edit Shortcut";
+            saveBtn.innerText = "SAVE";
+            modalOverlay.classList.add('active');
+            closeAllMenus();
+        };
+        addBtn.addEventListener('click', () => {
+            editingIndex = -1;
+            nameInput.value = '';
+            urlInput.value = '';
+            modalTitle.innerText = "New Shortcut";
+            saveBtn.innerText = "SAVE";
+            modalOverlay.classList.add('active');
+        });
+        document.getElementById('cancelBtn').addEventListener('click', () => modalOverlay.classList.remove('active'));
+        saveBtn.addEventListener('click', () => {
+            const name = nameInput.value.trim();
+            let url = urlInput.value.trim();
+            if (name && url) {
+                if (!url.startsWith('http')) url = 'https://' + url;
+                if (editingIndex >= 0) {
+                    shortcuts[editingIndex] = { name, url };
+                } else {
+                    shortcuts.push({ name, url });
+                }
+                localStorage.setItem('bledo_shortcuts', JSON.stringify(shortcuts));
+                renderShortcuts();
+                modalOverlay.classList.remove('active');
+            }
+        });
+        trigger.addEventListener('click', (e) => {
+            e.stopPropagation();
+            menu.classList.toggle('active');
+        });
+        document.querySelectorAll('.engine-item').forEach(item => {
+            item.addEventListener('click', () => {
+                currentEngine = item.dataset.url;
+                trigger.textContent = item.dataset.name;
+                menu.classList.remove('active');
+                localStorage.setItem('bledo_engine', currentEngine);
+            });
+        });
+        document.addEventListener('click', () => {
+            menu.classList.remove('active');
+            closeAllMenus();
+        });
+        function search() {
+            const q = searchInput.value.trim();
+            if (!q) return;
+            if (window.flutter_inappwebview) {
+                window.flutter_inappwebview.callHandler('onNavigate', q, currentEngine);
+            } else {
+                window.location.href = currentEngine + encodeURIComponent(q);
+            }
+        }
+        goBtn.addEventListener('click', search);
+        searchInput.addEventListener('keypress', (e) => { if(e.key === 'Enter') search(); });
+        renderShortcuts();
+    </script>
+</body>
+</html>
