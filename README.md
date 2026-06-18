@@ -1,69 +1,57 @@
 # Bledo Browser
 
-A modern web browser with a clean, dark-themed interface. Bledo is a non-Chromium based browser that uses Python's requests library to fetch web pages and BeautifulSoup for HTML parsing.
+Bledo is a privacy-focused browser for Android built with Flutter. It features built-in security integrity checks and a clean, customizable user interface.
 
 ## Features
 
-- **Tabbed Browsing**: Open multiple tabs and navigate between them easily
-- **Navigation Controls**: Back, forward, reload, and home buttons
-- **Address Bar**: Enter URLs directly or search
-- **Dark Theme**: Modern dark interface for comfortable browsing
-- **Status Bar**: Shows loading progress and status messages
-- **Non-Chromium**: Does not use any Chromium-based rendering engine
+- **Privacy First**: Designed to keep your browsing experience private.
+- **Security Guard**: Integrated checks for root access, debuggers, and environment integrity to protect your data.
+- **Customizable Themes**: Multiple color themes including Blue, Light, and Green.
+- **Modern Web Engine**: Powered by `flutter_inappwebview` for a robust browsing experience.
+- **Anti-Tampering**: Built-in protection against unauthorized modifications.
 
-## Important Notes
+## Getting Started
 
-This browser uses a non-Chromium approach by fetching web pages using the `requests` library and displaying them with basic HTML parsing. This means:
+### Prerequisites
 
-- JavaScript execution is not supported
-- Complex CSS rendering is limited
-- Modern web applications may not function correctly
-- Pages are displayed as text content with basic formatting
+- [Flutter SDK](https://docs.flutter.dev/get-started/install) (>= 3.0.0)
+- [Android SDK](https://developer.android.com/studio)
+- Java 17
 
-This is a fundamental limitation of avoiding Chromium-based rendering engines while using Python.
+### Installation
 
-## Installation
+1.  Clone the repository:
+    ```bash
+    git clone https://github.com/yourusername/bledo.git
+    cd bledo
+    ```
+2.  Install dependencies:
+    ```bash
+    flutter pub get
+    ```
+3.  Run the app:
+    ```bash
+    flutter run
+    ```
 
-1. Make sure you have Python 3.8 or higher installed
-2. Install dependencies:
-   ```
-   pip install -r requirements.txt
-   ```
+### Building for Release
 
-## Building the Executable
-
-To compile the browser into a standalone .exe file:
-
-1. Place your logo image as `logo.png` in the project directory
-2. Run the build script:
-   ```
-   build.bat
-   ```
-
-The compiled executable will be created in the `dist` folder.
-
-## Running the Browser
-
-To run the browser without compiling:
+To generate a release APK:
 
 ```bash
-python bledo_browser.py
+flutter build apk --release --no-tree-shake-icons
 ```
 
-## Logo
+The APK will be located at `build/app/outputs/flutter-apk/app-release.apk`.
 
-To use your custom logo:
-1. Save your logo image as `logo.png` in the `C:\BledoWIndows` directory
-2. The browser will automatically load it as the window icon
+## Security Notice
 
-## Requirements
-
-- Python 3.8+
-- PyQt5
-- requests
-- beautifulsoup4
-- pyinstaller (for building .exe)
+This application includes integrity checks. If the application detects a compromised environment (root, debugger, signature mismatch), it may restrict access or wipe local data for security.
 
 ## License
 
-This project is provided as-is for educational purposes.
+This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
+
+## Credits
+
+This browser was made by Woopskidds [Youtube](https://youtube.com/@Woopskidd).
