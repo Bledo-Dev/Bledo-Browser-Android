@@ -9,6 +9,7 @@ Bledo is a privacy-focused browser for Android built with Flutter. It features b
 - **Customizable Themes**: Multiple color themes including Blue, Light, and Green.
 - **Modern Web Engine**: Powered by `flutter_inappwebview` for a robust browsing experience.
 - **Anti-Tampering**: Built-in protection against unauthorized modifications.
+- **Dynamic IP Rotator (Coming Soon)**: Built-in protection that automatically scrambles your IP address per session to stop websites from tracking you.
 
 ## Getting Started
 
