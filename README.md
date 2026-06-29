@@ -23,14 +23,13 @@ Bledo is a privacy-focused browser for Android built with Flutter. It features b
 
 1.  Clone the repository:
     ```bash
-    git clone https://github.com/Bledo-Dev/bledo.git
-    cd bledo
+    git clone --depth 1 --filter=blob:none --no-checkout https://github.com/Bledo-Dev/Bledo-Browser-Android.git .
     ```
 2.  Install dependencies:
     ```bash
     flutter pub get
     ```
-3.  Run the app:
+2.  Run the app:
     ```bash
     flutter run
     ```
